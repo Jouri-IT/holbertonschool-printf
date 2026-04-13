@@ -1,29 +1,3 @@
-#include "main.h"
-
-/**
- * get_handler - Returns the handler for a given specifier
- * @c: The specifier character after '%'
- *
- * Return: Pointer to handler function, or NULL if not found
- */
-static int (*get_handler(char c))(va_list)
-{
-	int i;
-	specifier_t specs[] = {
-		{'c', print_char},
-		{'s', print_string},
-		{'%', print_percent},
-		{0, NULL}
-	};
-
-	for (i = 0; specs[i].handler; i++)
-	{
-		if (specs[i].spec == c)
-			return (specs[i].handler);
-	}
-	return (NULL);
-}
-
 /**
  * _printf - Produces output to stdout according to a format string
  * @format: The format string containing directives
@@ -52,7 +26,10 @@ int _printf(const char *format, ...)
 		{
 			format++;
 			if (!*format)
-				break;
+			{
+				va_end(args);
+				return (count);
+			}
 			handler = get_handler(*format);
 			if (handler)
 				count += handler(args);
