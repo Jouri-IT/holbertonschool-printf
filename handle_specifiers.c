@@ -57,3 +57,37 @@ int print_percent(va_list args)
 	(void)args;
 	return (write_char('%'));
 }
+/**
+ * print_int - Handles %d and %i specifiers
+ * @args: The variadic argument list
+ *
+ * Return: Number of characters printed
+ */
+int print_int(va_list args)
+{
+	int n;
+	int count;
+	int divisor;
+	int temp;
+
+	n = va_arg(args, int);
+	count = 0;
+	if (n < 0)
+	{
+		count += write_char('-');
+		n = -n;
+	}
+	divisor = 1;
+	temp = n;
+	while (temp / 10 > 0)
+	{
+		divisor *= 10;
+		temp /= 10;
+	}
+	while (divisor >= 1)
+	{
+		count += write_char('0' + (n / divisor % 10));
+		divisor /= 10;
+	}
+	return (count);
+}
