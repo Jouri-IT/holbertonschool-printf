@@ -67,27 +67,25 @@ int print_percent(va_list args)
 int print_int(va_list args)
 {
 	int n;
+	unsigned int u;
 	int count;
-	int divisor;
-	int temp;
+	unsigned int divisor;
 
 	n = va_arg(args, int);
 	count = 0;
 	if (n < 0)
 	{
 		count += write_char('-');
-		n = -n;
+		u = (unsigned int)(-(n + 1)) + 1;
 	}
+	else
+		u = (unsigned int)n;
 	divisor = 1;
-	temp = n;
-	while (temp / 10 > 0)
-	{
+	while (u / divisor >= 10)
 		divisor *= 10;
-		temp /= 10;
-	}
 	while (divisor >= 1)
 	{
-		count += write_char('0' + (n / divisor % 10));
+		count += write_char('0' + (u / divisor % 10));
 		divisor /= 10;
 	}
 	return (count);
