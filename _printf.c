@@ -1,5 +1,11 @@
 #include "main.h"
 
+/**
+ * get_handler - Returns the handler for a given specifier
+ * @c: The specifier character after '%'
+ *
+ * Return: Pointer to handler function, or NULL if not found
+ */
 static int (*get_handler(char c))(va_list)
 {
 	int i;
@@ -18,6 +24,12 @@ static int (*get_handler(char c))(va_list)
 	return (NULL);
 }
 
+/**
+ * _printf - Produces output to stdout according to a format string
+ * @format: The format string containing directives
+ *
+ * Return: Number of characters printed, or -1 on error
+ */
 int _printf(const char *format, ...)
 {
 	va_list args;
