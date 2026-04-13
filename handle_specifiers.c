@@ -57,6 +57,7 @@ int print_percent(va_list args)
 	(void)args;
 	return (write_char('%'));
 }
+
 /**
  * print_int - Handles %d and %i specifiers
  * @args: The variadic argument list

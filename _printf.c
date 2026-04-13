@@ -13,9 +13,9 @@ static int (*get_handler(char c))(va_list)
 		{'c', print_char},
 		{'s', print_string},
 		{'%', print_percent},
-		{0, NULL
 		{'d', print_int},
-		{'i', print_int},}
+		{'i', print_int},
+		{0, NULL}
 	};
 
 	for (i = 0; specs[i].handler; i++)
