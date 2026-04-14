@@ -56,7 +56,7 @@ int _printf(const char *format, ...)
 			if (!*format)
 			{
 				va_end(args);
-				return (count);
+				return (-1);
 			}
 			handler = get_handler(*format);
 			if (handler)
