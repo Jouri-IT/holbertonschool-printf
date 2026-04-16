@@ -20,8 +20,10 @@ int buffer_char(char c, char buffer[], int *index)
 {
 	if (*index == BUF_SIZE)
 		flush_buffer(buffer, index);
+
 	buffer[*index] = c;
 	(*index)++;
+
 	return (1);
 }
 
@@ -100,12 +102,12 @@ int print_int(va_list args, char buffer[], int *index,
 {
 	long int n;
 	unsigned long int u;
-	unsigned long int divisor;
 	char sign;
 	char tmp[32];
 	int len;
 	int count;
 	int i;
+	int total_len;
 
 	if (length == 'l')
 		n = va_arg(args, long int);
@@ -141,8 +143,23 @@ int print_int(va_list args, char buffer[], int *index,
 	while (len < precision)
 		tmp[len++] = '0';
 
+	total_len = len + (sign ? 1 : 0);
 	count = 0;
-	count += print_padding(width, len + (sign ? 1 : 0), buffer, index);
+
+	if (flag == '0' && precision < 0)
+	{
+		if (sign)
+		{
+			count += buffer_char(sign, buffer, index);
+			sign = 0;
+		}
+		for (i = total_len; i < width; i++)
+			count += buffer_char('0', buffer, index);
+	}
+	else
+	{
+		count += print_padding(width, total_len, buffer, index);
+	}
 
 	if (sign)
 		count += buffer_char(sign, buffer, index);
@@ -150,6 +167,5 @@ int print_int(va_list args, char buffer[], int *index,
 	for (i = len - 1; i >= 0; i--)
 		count += buffer_char(tmp[i], buffer, index);
 
-	(void)divisor;
 	return (count);
 }

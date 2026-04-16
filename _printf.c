@@ -19,14 +19,16 @@ static int (*get_handler(char c))(va_list, char[], int *, char, char, int, int)
 	};
 
 	for (i = 0; specs[i].handler; i++)
+	{
 		if (specs[i].spec == c)
 			return (specs[i].handler);
+	}
 	return (NULL);
 }
 
 static int is_flag(char c)
 {
-	return (c == '+' || c == ' ' || c == '#');
+	return (c == '+' || c == ' ' || c == '#' || c == '0');
 }
 
 static int is_length(char c)
@@ -42,17 +44,21 @@ static int is_digit(char c)
 int _printf(const char *format, ...)
 {
 	va_list args;
-	int count = 0;
+	int count;
 	int (*handler)(va_list, char[], int *, char, char, int, int);
 	char buffer[BUF_SIZE];
-	int buf_index = 0;
-	char flag, length;
-	int width, precision;
+	int buf_index;
+	char flag;
+	char length;
+	int width;
+	int precision;
 
 	if (!format)
 		return (-1);
 
 	va_start(args, format);
+	count = 0;
+	buf_index = 0;
 
 	while (*format)
 	{
@@ -74,6 +80,10 @@ int _printf(const char *format, ...)
 					flag = '+';
 				else if (*format == ' ' && flag != '+')
 					flag = ' ';
+				else if (*format == '#' && flag == 0)
+					flag = '#';
+				else if (*format == '0' && flag == 0)
+					flag = '0';
 				format++;
 			}
 
@@ -86,13 +96,15 @@ int _printf(const char *format, ...)
 			if (*format == '*')
 			{
 				width = va_arg(args, int);
+				if (width < 0)
+					width = 0;
 				format++;
 			}
 			else
 			{
 				while (is_digit(*format))
 				{
-					width = width * 10 + (*format - '0');
+					width = (width * 10) + (*format - '0');
 					format++;
 				}
 			}
@@ -101,7 +113,6 @@ int _printf(const char *format, ...)
 			{
 				format++;
 				precision = 0;
-
 				if (*format == '*')
 				{
 					precision = va_arg(args, int);
@@ -111,14 +122,19 @@ int _printf(const char *format, ...)
 				{
 					while (is_digit(*format))
 					{
-						precision = precision * 10 + (*format - '0');
+						precision = (precision * 10) + (*format - '0');
 						format++;
 					}
 				}
 			}
 
-			handler = get_handler(*format);
+			if (!*format)
+			{
+				va_end(args);
+				return (-1);
+			}
 
+			handler = get_handler(*format);
 			if (handler)
 				count += handler(args, buffer, &buf_index, flag, length, width, precision);
 			else
