@@ -36,29 +36,52 @@ int print_pointer(va_list args, char buffer[], int *index,
 	int count;
 	int len;
 
-	(void)flag;
 	(void)length;
 	(void)precision;
+
 	ptr = va_arg(args, void *);
 	count = 0;
 
 	if (!ptr)
 	{
-		count += print_padding(width, 5, buffer, index);
-		count += buffer_char('(', buffer, index);
-		count += buffer_char('n', buffer, index);
-		count += buffer_char('i', buffer, index);
-		count += buffer_char('l', buffer, index);
-		count += buffer_char(')', buffer, index);
+		if (flag == '-')
+		{
+			count += buffer_char('(', buffer, index);
+			count += buffer_char('n', buffer, index);
+			count += buffer_char('i', buffer, index);
+			count += buffer_char('l', buffer, index);
+			count += buffer_char(')', buffer, index);
+			count += print_padding(width, 5, buffer, index);
+		}
+		else
+		{
+			count += print_padding(width, 5, buffer, index);
+			count += buffer_char('(', buffer, index);
+			count += buffer_char('n', buffer, index);
+			count += buffer_char('i', buffer, index);
+			count += buffer_char('l', buffer, index);
+			count += buffer_char(')', buffer, index);
+		}
 		return (count);
 	}
 
 	addr = (unsigned long int)ptr;
 	len = ptr_len(addr) + 2;
-	count += print_padding(width, len, buffer, index);
-	count += buffer_char('0', buffer, index);
-	count += buffer_char('x', buffer, index);
-	count += print_ptr_hex(addr, buffer, index);
+
+	if (flag == '-')
+	{
+		count += buffer_char('0', buffer, index);
+		count += buffer_char('x', buffer, index);
+		count += print_ptr_hex(addr, buffer, index);
+		count += print_padding(width, len, buffer, index);
+	}
+	else
+	{
+		count += print_padding(width, len, buffer, index);
+		count += buffer_char('0', buffer, index);
+		count += buffer_char('x', buffer, index);
+		count += print_ptr_hex(addr, buffer, index);
+	}
 
 	return (count);
 }
