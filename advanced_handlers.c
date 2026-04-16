@@ -1,19 +1,10 @@
 #include "main.h"
 
-/**
- * print_base_unsigned - prints unsigned int using a given base
- * @n: number to print
- * @base: base characters
- * @buffer: output buffer
- * @index: current index
- *
- * Return: number of characters printed
- */
-static int print_base_unsigned_inner(unsigned int n, char *base,
+static int print_base_unsigned_inner(unsigned long int n, char *base,
 		char buffer[], int *index)
 {
 	int count;
-	unsigned int base_len;
+	unsigned long int base_len;
 
 	count = 0;
 	base_len = 0;
@@ -27,41 +18,34 @@ static int print_base_unsigned_inner(unsigned int n, char *base,
 	return (count);
 }
 
-/**
- * print_unsigned - Handles %u specifier
- * @args: The variadic argument list
- * @buffer: output buffer
- * @index: current index
- * @flag: unused flag
- *
- * Return: Number of characters printed
- */
-int print_unsigned(va_list args, char buffer[], int *index, char flag)
+int print_unsigned(va_list args, char buffer[], int *index, char flag, char length)
 {
-	unsigned int n;
+	unsigned long int n;
 
 	(void)flag;
-	n = va_arg(args, unsigned int);
+	if (length == 'l')
+		n = va_arg(args, unsigned long int);
+	else if (length == 'h')
+		n = (unsigned short)va_arg(args, unsigned int);
+	else
+		n = va_arg(args, unsigned int);
+
 	return (print_base_unsigned_inner(n, "0123456789", buffer, index));
 }
 
-/**
- * print_octal - Handles %o specifier
- * @args: The variadic argument list
- * @buffer: output buffer
- * @index: current index
- * @flag: supported flag
- *
- * Return: Number of characters printed
- */
-int print_octal(va_list args, char buffer[], int *index, char flag)
+int print_octal(va_list args, char buffer[], int *index, char flag, char length)
 {
-	unsigned int n;
+	unsigned long int n;
 	int count;
 
-	n = va_arg(args, unsigned int);
-	count = 0;
+	if (length == 'l')
+		n = va_arg(args, unsigned long int);
+	else if (length == 'h')
+		n = (unsigned short)va_arg(args, unsigned int);
+	else
+		n = va_arg(args, unsigned int);
 
+	count = 0;
 	if (flag == '#' && n != 0)
 		count += buffer_char('0', buffer, index);
 
@@ -69,23 +53,19 @@ int print_octal(va_list args, char buffer[], int *index, char flag)
 	return (count);
 }
 
-/**
- * print_hex_lower - Handles %x specifier
- * @args: The variadic argument list
- * @buffer: output buffer
- * @index: current index
- * @flag: supported flag
- *
- * Return: Number of characters printed
- */
-int print_hex_lower(va_list args, char buffer[], int *index, char flag)
+int print_hex_lower(va_list args, char buffer[], int *index, char flag, char length)
 {
-	unsigned int n;
+	unsigned long int n;
 	int count;
 
-	n = va_arg(args, unsigned int);
-	count = 0;
+	if (length == 'l')
+		n = va_arg(args, unsigned long int);
+	else if (length == 'h')
+		n = (unsigned short)va_arg(args, unsigned int);
+	else
+		n = va_arg(args, unsigned int);
 
+	count = 0;
 	if (flag == '#' && n != 0)
 	{
 		count += buffer_char('0', buffer, index);
@@ -96,23 +76,19 @@ int print_hex_lower(va_list args, char buffer[], int *index, char flag)
 	return (count);
 }
 
-/**
- * print_hex_upper - Handles %X specifier
- * @args: The variadic argument list
- * @buffer: output buffer
- * @index: current index
- * @flag: supported flag
- *
- * Return: Number of characters printed
- */
-int print_hex_upper(va_list args, char buffer[], int *index, char flag)
+int print_hex_upper(va_list args, char buffer[], int *index, char flag, char length)
 {
-	unsigned int n;
+	unsigned long int n;
 	int count;
 
-	n = va_arg(args, unsigned int);
-	count = 0;
+	if (length == 'l')
+		n = va_arg(args, unsigned long int);
+	else if (length == 'h')
+		n = (unsigned short)va_arg(args, unsigned int);
+	else
+		n = va_arg(args, unsigned int);
 
+	count = 0;
 	if (flag == '#' && n != 0)
 	{
 		count += buffer_char('0', buffer, index);

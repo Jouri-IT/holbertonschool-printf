@@ -1,13 +1,5 @@
 #include "main.h"
 
-/**
- * print_ptr_hex - prints number in hex (lowercase)
- * @n: number
- * @buffer: output buffer
- * @index: current index
- *
- * Return: count
- */
 static int print_ptr_hex(unsigned long int n, char buffer[], int *index)
 {
 	char *hex;
@@ -23,22 +15,14 @@ static int print_ptr_hex(unsigned long int n, char buffer[], int *index)
 	return (count);
 }
 
-/**
- * print_pointer - handles %p
- * @args: variadic args
- * @buffer: output buffer
- * @index: current index
- * @flag: unused flag
- *
- * Return: count
- */
-int print_pointer(va_list args, char buffer[], int *index, char flag)
+int print_pointer(va_list args, char buffer[], int *index, char flag, char length)
 {
 	void *ptr;
 	unsigned long int addr;
 	int count;
 
 	(void)flag;
+	(void)length;
 	ptr = va_arg(args, void *);
 	count = 0;
 

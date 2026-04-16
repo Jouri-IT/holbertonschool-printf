@@ -1,13 +1,5 @@
 #include "main.h"
 
-/**
- * print_hex_special - prints hex value (2 digits uppercase)
- * @n: value
- * @buffer: output buffer
- * @index: current index
- *
- * Return: count
- */
 static int print_hex_special(unsigned int n, char buffer[], int *index)
 {
 	char *hex;
@@ -15,29 +7,19 @@ static int print_hex_special(unsigned int n, char buffer[], int *index)
 
 	hex = "0123456789ABCDEF";
 	count = 0;
-
 	count += buffer_char(hex[n / 16], buffer, index);
 	count += buffer_char(hex[n % 16], buffer, index);
-
 	return (count);
 }
 
-/**
- * print_S - handles %S
- * @args: variadic args
- * @buffer: output buffer
- * @index: current index
- * @flag: unused flag
- *
- * Return: count
- */
-int print_S(va_list args, char buffer[], int *index, char flag)
+int print_S(va_list args, char buffer[], int *index, char flag, char length)
 {
 	char *str;
 	int count;
 	unsigned char c;
 
 	(void)flag;
+	(void)length;
 	str = va_arg(args, char *);
 	if (!str)
 		str = "(null)";

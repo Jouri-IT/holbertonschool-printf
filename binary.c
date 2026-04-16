@@ -1,27 +1,24 @@
 #include "main.h"
 
-/**
- * print_binary - prints unsigned int in binary
- * @args: argument list
- * @buffer: output buffer
- * @index: current index
- * @flag: unused flag
- *
- * Return: number of characters printed
- */
-int print_binary(va_list args, char buffer[], int *index, char flag)
+int print_binary(va_list args, char buffer[], int *index, char flag, char length)
 {
-	unsigned int n;
+	unsigned long int n;
 	int started;
 	int count;
 	int i;
 
 	(void)flag;
-	n = va_arg(args, unsigned int);
+	if (length == 'l')
+		n = va_arg(args, unsigned long int);
+	else if (length == 'h')
+		n = (unsigned short)va_arg(args, unsigned int);
+	else
+		n = va_arg(args, unsigned int);
+
 	started = 0;
 	count = 0;
 
-	for (i = 31; i >= 0; i--)
+	for (i = (sizeof(unsigned long int) * 8) - 1; i >= 0; i--)
 	{
 		if ((n >> i) & 1)
 		{
