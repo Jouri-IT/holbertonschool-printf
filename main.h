@@ -29,3 +29,5 @@ int print_hex_upper(va_list, char[], int *, char, char, int, int);
 int print_reverse(va_list args, char buffer[], int *index, char flag, char length, int width, int precision);
 int print_rot13(va_list args, char buffer[], int *index, char flag, char length, int width, int precision);
 int print_binary(va_list args, char buffer[], int *index, char flag, char length, int width, int precision);
+int print_S(va_list args, char buffer[], int *index, char flag, char length, int width, int precision);
+int print_pointer(va_list args, char buffer[], int *index, char flag, char length, int width, int precision);
