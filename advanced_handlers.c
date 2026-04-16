@@ -18,9 +18,24 @@ static int print_base_unsigned_inner(unsigned long int n, char *base,
 	return (count);
 }
 
-int print_unsigned(va_list args, char buffer[], int *index, char flag, char length)
+static int unsigned_len(unsigned long int n, unsigned long int base_len)
+{
+	int len;
+
+	len = 1;
+	while (n >= base_len)
+	{
+		n /= base_len;
+		len++;
+	}
+	return (len);
+}
+
+int print_unsigned(va_list args, char buffer[], int *index, char flag, char length, int width)
 {
 	unsigned long int n;
+	int count;
+	int len;
 
 	(void)flag;
 	if (length == 'l')
@@ -30,13 +45,18 @@ int print_unsigned(va_list args, char buffer[], int *index, char flag, char leng
 	else
 		n = va_arg(args, unsigned int);
 
-	return (print_base_unsigned_inner(n, "0123456789", buffer, index));
+	len = unsigned_len(n, 10);
+	count = 0;
+	count += print_padding(width, len, buffer, index);
+	count += print_base_unsigned_inner(n, "0123456789", buffer, index);
+	return (count);
 }
 
-int print_octal(va_list args, char buffer[], int *index, char flag, char length)
+int print_octal(va_list args, char buffer[], int *index, char flag, char length, int width)
 {
 	unsigned long int n;
 	int count;
+	int len;
 
 	if (length == 'l')
 		n = va_arg(args, unsigned long int);
@@ -45,18 +65,23 @@ int print_octal(va_list args, char buffer[], int *index, char flag, char length)
 	else
 		n = va_arg(args, unsigned int);
 
+	len = unsigned_len(n, 8);
+	if (flag == '#' && n != 0)
+		len++;
+
 	count = 0;
+	count += print_padding(width, len, buffer, index);
 	if (flag == '#' && n != 0)
 		count += buffer_char('0', buffer, index);
-
 	count += print_base_unsigned_inner(n, "01234567", buffer, index);
 	return (count);
 }
 
-int print_hex_lower(va_list args, char buffer[], int *index, char flag, char length)
+int print_hex_lower(va_list args, char buffer[], int *index, char flag, char length, int width)
 {
 	unsigned long int n;
 	int count;
+	int len;
 
 	if (length == 'l')
 		n = va_arg(args, unsigned long int);
@@ -65,21 +90,26 @@ int print_hex_lower(va_list args, char buffer[], int *index, char flag, char len
 	else
 		n = va_arg(args, unsigned int);
 
+	len = unsigned_len(n, 16);
+	if (flag == '#' && n != 0)
+		len += 2;
+
 	count = 0;
+	count += print_padding(width, len, buffer, index);
 	if (flag == '#' && n != 0)
 	{
 		count += buffer_char('0', buffer, index);
 		count += buffer_char('x', buffer, index);
 	}
-
 	count += print_base_unsigned_inner(n, "0123456789abcdef", buffer, index);
 	return (count);
 }
 
-int print_hex_upper(va_list args, char buffer[], int *index, char flag, char length)
+int print_hex_upper(va_list args, char buffer[], int *index, char flag, char length, int width)
 {
 	unsigned long int n;
 	int count;
+	int len;
 
 	if (length == 'l')
 		n = va_arg(args, unsigned long int);
@@ -88,13 +118,17 @@ int print_hex_upper(va_list args, char buffer[], int *index, char flag, char len
 	else
 		n = va_arg(args, unsigned int);
 
+	len = unsigned_len(n, 16);
+	if (flag == '#' && n != 0)
+		len += 2;
+
 	count = 0;
+	count += print_padding(width, len, buffer, index);
 	if (flag == '#' && n != 0)
 	{
 		count += buffer_char('0', buffer, index);
 		count += buffer_char('X', buffer, index);
 	}
-
 	count += print_base_unsigned_inner(n, "0123456789ABCDEF", buffer, index);
 	return (count);
 }

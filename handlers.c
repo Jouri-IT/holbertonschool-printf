@@ -27,49 +27,78 @@ int buffer_char(char c, char buffer[], int *index)
 	return (1);
 }
 
-int print_char(va_list args, char buffer[], int *index, char flag, char length)
+int print_padding(int width, int len, char buffer[], int *index)
+{
+	int count;
+	int i;
+
+	count = 0;
+	for (i = len; i < width; i++)
+		count += buffer_char(' ', buffer, index);
+
+	return (count);
+}
+
+int print_char(va_list args, char buffer[], int *index, char flag, char length, int width)
 {
 	char c;
+	int count;
 
 	(void)flag;
 	(void)length;
 	c = (char)va_arg(args, int);
-	return (buffer_char(c, buffer, index));
+	count = 0;
+	count += print_padding(width, 1, buffer, index);
+	count += buffer_char(c, buffer, index);
+	return (count);
 }
 
-int print_string(va_list args, char buffer[], int *index, char flag, char length)
+int print_string(va_list args, char buffer[], int *index, char flag, char length, int width)
 {
 	char *str;
 	int count;
+	int len;
 
 	(void)flag;
 	(void)length;
 	str = va_arg(args, char *);
 	if (!str)
 		str = "(null)";
-	count = 0;
 
+	len = 0;
+	while (str[len])
+		len++;
+
+	count = 0;
+	count += print_padding(width, len, buffer, index);
 	while (*str)
 		count += buffer_char(*str++, buffer, index);
 
 	return (count);
 }
 
-int print_percent(va_list args, char buffer[], int *index, char flag, char length)
+int print_percent(va_list args, char buffer[], int *index, char flag, char length, int width)
 {
+	int count;
+
 	(void)args;
 	(void)flag;
 	(void)length;
-	return (buffer_char('%', buffer, index));
+	count = 0;
+	count += print_padding(width, 1, buffer, index);
+	count += buffer_char('%', buffer, index);
+	return (count);
 }
 
-int print_int(va_list args, char buffer[], int *index, char flag, char length)
+int print_int(va_list args, char buffer[], int *index, char flag, char length, int width)
 {
 	long int n;
 	unsigned long int u;
 	int count;
 	unsigned long int divisor;
 	char sign;
+	int len;
+	unsigned long int tmp;
 
 	if (length == 'l')
 		n = va_arg(args, long int);
@@ -88,13 +117,24 @@ int print_int(va_list args, char buffer[], int *index, char flag, char length)
 	else if (flag == ' ')
 		sign = ' ';
 
-	if (sign)
-		count += buffer_char(sign, buffer, index);
-
 	if (n < 0)
 		u = (unsigned long int)(-n);
 	else
 		u = (unsigned long int)n;
+
+	len = 0;
+	if (sign)
+		len++;
+	tmp = u;
+	do {
+		len++;
+		tmp /= 10;
+	} while (tmp);
+
+	count += print_padding(width, len, buffer, index);
+
+	if (sign)
+		count += buffer_char(sign, buffer, index);
 
 	divisor = 1;
 	while (u / divisor >= 10)

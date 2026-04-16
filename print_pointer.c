@@ -15,11 +15,25 @@ static int print_ptr_hex(unsigned long int n, char buffer[], int *index)
 	return (count);
 }
 
-int print_pointer(va_list args, char buffer[], int *index, char flag, char length)
+static int ptr_len(unsigned long int n)
+{
+	int len;
+
+	len = 1;
+	while (n >= 16)
+	{
+		n /= 16;
+		len++;
+	}
+	return (len);
+}
+
+int print_pointer(va_list args, char buffer[], int *index, char flag, char length, int width)
 {
 	void *ptr;
 	unsigned long int addr;
 	int count;
+	int len;
 
 	(void)flag;
 	(void)length;
@@ -28,6 +42,7 @@ int print_pointer(va_list args, char buffer[], int *index, char flag, char lengt
 
 	if (!ptr)
 	{
+		count += print_padding(width, 5, buffer, index);
 		count += buffer_char('(', buffer, index);
 		count += buffer_char('n', buffer, index);
 		count += buffer_char('i', buffer, index);
@@ -37,6 +52,8 @@ int print_pointer(va_list args, char buffer[], int *index, char flag, char lengt
 	}
 
 	addr = (unsigned long int)ptr;
+	len = ptr_len(addr) + 2;
+	count += print_padding(width, len, buffer, index);
 	count += buffer_char('0', buffer, index);
 	count += buffer_char('x', buffer, index);
 	count += print_ptr_hex(addr, buffer, index);

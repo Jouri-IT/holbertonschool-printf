@@ -12,18 +12,34 @@ static int print_hex_special(unsigned int n, char buffer[], int *index)
 	return (count);
 }
 
-int print_S(va_list args, char buffer[], int *index, char flag, char length)
+int print_S(va_list args, char buffer[], int *index, char flag, char length, int width)
 {
 	char *str;
 	int count;
 	unsigned char c;
+	int len;
+	char *tmp;
 
 	(void)flag;
 	(void)length;
 	str = va_arg(args, char *);
 	if (!str)
 		str = "(null)";
+
+	len = 0;
+	tmp = str;
+	while (*tmp)
+	{
+		c = *tmp;
+		if (c < 32 || c >= 127)
+			len += 4;
+		else
+			len++;
+		tmp++;
+	}
+
 	count = 0;
+	count += print_padding(width, len, buffer, index);
 
 	while (*str)
 	{
