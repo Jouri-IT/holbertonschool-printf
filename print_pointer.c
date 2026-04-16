@@ -28,7 +28,8 @@ static int ptr_len(unsigned long int n)
 	return (len);
 }
 
-int print_pointer(va_list args, char buffer[], int *index, char flag, char length, int width)
+int print_pointer(va_list args, char buffer[], int *index,
+	char flag, char length, int width, int precision)
 {
 	void *ptr;
 	unsigned long int addr;
@@ -37,6 +38,7 @@ int print_pointer(va_list args, char buffer[], int *index, char flag, char lengt
 
 	(void)flag;
 	(void)length;
+	(void)precision;
 	ptr = va_arg(args, void *);
 	count = 0;
 
