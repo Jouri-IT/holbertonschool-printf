@@ -26,3 +26,4 @@ int print_hex_lower(va_list, char[], int *, char, char, int, int);
 int print_hex_upper(va_list, char[], int *, char, char, int, int);
 
 #endif
+int print_reverse(va_list args, char buffer[], int *index, char flag, char length, int width, int precision);
