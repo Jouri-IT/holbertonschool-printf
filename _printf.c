@@ -17,7 +17,7 @@ static int (*get_handler(char c))(va_list, char[], int *)
 		{'%', print_percent},
 		{'d', print_int},
 		{'i', print_int},
-	{'b', print_binary},
+		{'b', print_binary},
 		{0, NULL}
 	};
 
@@ -64,7 +64,6 @@ int _printf(const char *format, ...)
 				va_end(args);
 				return (-1);
 			}
-
 			handler = get_handler(*format);
 			if (handler)
 				count += handler(args, buffer, &buf_index);

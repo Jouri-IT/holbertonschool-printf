@@ -19,5 +19,6 @@ int print_char(va_list args, char buffer[], int *index);
 int print_string(va_list args, char buffer[], int *index);
 int print_percent(va_list args, char buffer[], int *index);
 int print_int(va_list args, char buffer[], int *index);
+int print_binary(va_list args, char buffer[], int *index);
 
 #endif
