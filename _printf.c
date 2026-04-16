@@ -15,6 +15,7 @@ static int (*get_handler(char c))(va_list)
 		{'%', print_percent},
 		{'d', print_int},
 		{'i', print_int},
+	{'b', print_binary},
 		{0, NULL}
 	};
 
