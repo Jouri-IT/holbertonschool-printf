@@ -64,22 +64,22 @@ int print_int(va_list args, char buffer[], int *index, char flag)
 	unsigned int u;
 	int count = 0;
 	unsigned int divisor;
+	char sign = 0;
 
 	n = va_arg(args, int);
 
-	if (n >= 0)
-	{
-		if (flag == '+')
-			count += buffer_char('+', buffer, index);
-		else if (flag == ' ')
-			count += buffer_char(' ', buffer, index);
-	}
+	if (n < 0)
+		sign = '-';
+	else if (flag == '+')
+		sign = '+';
+	else if (flag == ' ')
+		sign = ' ';
+
+	if (sign)
+		count += buffer_char(sign, buffer, index);
 
 	if (n < 0)
-	{
-		count += buffer_char('-', buffer, index);
 		u = (unsigned int)(-(n + 1)) + 1;
-	}
 	else
 		u = (unsigned int)n;
 
