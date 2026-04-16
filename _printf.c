@@ -76,7 +76,7 @@ int _printf(const char *format, ...)
 		format++;
 	}
 
-	count += flush_buffer(buffer, &buf_index);
+	flush_buffer(buffer, &buf_index);
 	va_end(args);
 	return (count);
 }
