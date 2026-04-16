@@ -5,6 +5,19 @@
 static int (*get_handler(char c))(va_list, char[], int *, char, char, int, int)
 {
 	int i;
+	specifier_t specs[] = {
+		{'c', print_char},
+		{'s', print_string},
+		{'%', print_percent},
+		{'d', print_int},
+		{'i', print_int},
+		{'u', print_unsigned},
+		{'o', print_octal},
+		{'x', print_hex_lower},
+		{'X', print_hex_upper},
+		{'r', print_reverse},
+		{0, NULL}
+	};
 
 	for (i = 0; specs[i].handler; i++)
 	{
