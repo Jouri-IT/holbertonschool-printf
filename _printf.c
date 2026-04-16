@@ -92,10 +92,20 @@ int _printf(const char *format, ...)
 				format++;
 			}
 
-			while (is_digit(*format))
+			if (*format == '*')
 			{
-				width = (width * 10) + (*format - '0');
+				width = va_arg(args, int);
+				if (width < 0)
+					width = 0;
 				format++;
+			}
+			else
+			{
+				while (is_digit(*format))
+				{
+					width = (width * 10) + (*format - '0');
+					format++;
+				}
 			}
 
 			if (!*format)
@@ -110,6 +120,8 @@ int _printf(const char *format, ...)
 			else
 			{
 				count += buffer_char('%', buffer, &buf_index);
+				if (width == 0 && flag == 0 && length == 0 && *format == '*')
+					count += buffer_char('*', buffer, &buf_index);
 				count += buffer_char(*format, buffer, &buf_index);
 			}
 		}
