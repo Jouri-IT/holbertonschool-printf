@@ -28,7 +28,7 @@ static int (*get_handler(char c))(va_list, char[], int *, char, char, int, int)
 
 static int is_flag(char c)
 {
-	return (c == '+' || c == ' ' || c == '#' || c == '0');
+	return (c == '+' || c == ' ' || c == '#' || c == '0' || c == '-');
 }
 
 static int is_length(char c)
@@ -76,9 +76,11 @@ int _printf(const char *format, ...)
 
 			while (is_flag(*format))
 			{
-				if (*format == '+')
+				if (*format == '-')
+					flag = '-';
+				else if (*format == '+')
 					flag = '+';
-				else if (*format == ' ' && flag != '+')
+				else if (*format == ' ' && flag != '+' && flag != '-')
 					flag = ' ';
 				else if (*format == '#' && flag == 0)
 					flag = '#';
@@ -97,7 +99,10 @@ int _printf(const char *format, ...)
 			{
 				width = va_arg(args, int);
 				if (width < 0)
-					width = 0;
+				{
+					flag = '-';
+					width = -width;
+				}
 				format++;
 			}
 			else
