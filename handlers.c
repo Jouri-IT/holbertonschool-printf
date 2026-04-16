@@ -1,53 +1,38 @@
 #include "main.h"
 
-#define BUF_SIZE 1024
-
 /**
- * flush_buffer - writes buffer to stdout
+ * write_char - Writes a single character to stdout
+ * @c: The character to write
+ *
+ * Return: Always 1
  */
-int flush_buffer(char buffer[], int *index)
+int write_char(char c)
 {
-	int count;
-
-	count = 0;
-	if (*index > 0)
-	{
-		write(1, buffer, *index);
-		count = *index;
-		*index = 0;
-	}
-	return (count);
-}
-
-/**
- * buffer_char - adds char to buffer
- */
-int buffer_char(char c, char buffer[], int *index)
-{
-	if (*index == BUF_SIZE)
-		flush_buffer(buffer, index);
-
-	buffer[*index] = c;
-	(*index)++;
-
+	write(1, &c, 1);
 	return (1);
 }
 
 /**
- * print_char - handles %c
+ * print_char - Handles %c specifier
+ * @args: The variadic argument list
+ *
+ * Return: Number of characters printed
  */
-int print_char(va_list args, char buffer[], int *index)
+int print_char(va_list args)
 {
 	char c;
 
 	c = (char)va_arg(args, int);
-	return (buffer_char(c, buffer, index));
+	return (write_char(c));
 }
 
 /**
- * print_string - handles %s
+ * print_string - Handles %s specifier
+ * @args: The variadic argument list
+ *
+ * Return: Number of characters printed
  */
-int print_string(va_list args, char buffer[], int *index)
+int print_string(va_list args)
 {
 	char *str;
 	int count;
@@ -56,26 +41,30 @@ int print_string(va_list args, char buffer[], int *index)
 	if (!str)
 		str = "(null)";
 	count = 0;
-
 	while (*str)
-		count += buffer_char(*str++, buffer, index);
-
+		count += write_char(*str++);
 	return (count);
 }
 
 /**
- * print_percent - handles %%
+ * print_percent - Handles %% specifier
+ * @args: The variadic argument list (unused)
+ *
+ * Return: Always 1
  */
-int print_percent(va_list args, char buffer[], int *index)
+int print_percent(va_list args)
 {
 	(void)args;
-	return (buffer_char('%', buffer, index));
+	return (write_char('%'));
 }
 
 /**
- * print_int - handles %d %i
+ * print_int - Handles %d and %i specifiers
+ * @args: The variadic argument list
+ *
+ * Return: Number of characters printed
  */
-int print_int(va_list args, char buffer[], int *index)
+int print_int(va_list args)
 {
 	int n;
 	unsigned int u;
@@ -84,22 +73,19 @@ int print_int(va_list args, char buffer[], int *index)
 
 	n = va_arg(args, int);
 	count = 0;
-
 	if (n < 0)
 	{
-		count += buffer_char('-', buffer, index);
+		count += write_char('-');
 		u = (unsigned int)(-(n + 1)) + 1;
 	}
 	else
 		u = (unsigned int)n;
-
 	divisor = 1;
 	while (u / divisor >= 10)
 		divisor *= 10;
-
 	while (divisor >= 1)
 	{
-		count += buffer_char('0' + (u / divisor % 10), buffer, index);
+		count += write_char('0' + (u / divisor % 10));
 		divisor /= 10;
 	}
 	return (count);
