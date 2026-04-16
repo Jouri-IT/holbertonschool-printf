@@ -68,7 +68,7 @@ int _printf(const char *format, ...)
 			}
 			handler = get_handler(*format);
 			if (handler)
-				count += handler(args, buffer, &buf_index);
+				count += handler(args, buffer, &buf_index, flag);
 			else
 			{
 				count += buffer_char('%', buffer, &buf_index);
