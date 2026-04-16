@@ -8,7 +8,7 @@
  *
  * Return: Pointer to handler function, or NULL if not found
  */
-static int (*get_handler(char c))(va_list, char[], int *)
+static int (*get_handler(char c))(va_list, char[], int *, char)
 {
 	int i;
 	specifier_t specs[] = {
@@ -41,7 +41,7 @@ int _printf(const char *format, ...)
 {
 	va_list args;
 	int count;
-	int (*handler)(va_list, char[], int *);
+	int (*handler)(va_list, char[], int *, char);
 	char buffer[BUF_SIZE];
 	int buf_index;
 
