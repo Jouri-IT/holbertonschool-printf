@@ -5,16 +5,18 @@
  * @args: argument list
  * @buffer: output buffer
  * @index: current index
+ * @flag: unused flag
  *
  * Return: number of characters printed
  */
-int print_binary(va_list args, char buffer[], int *index)
+int print_binary(va_list args, char buffer[], int *index, char flag)
 {
 	unsigned int n;
 	int started;
 	int count;
 	int i;
 
+	(void)flag;
 	n = va_arg(args, unsigned int);
 	started = 0;
 	count = 0;

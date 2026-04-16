@@ -47,13 +47,15 @@ int buffer_char(char c, char buffer[], int *index)
  * @args: The variadic argument list
  * @buffer: output buffer
  * @index: current index
+ * @flag: unused flag
  *
  * Return: Number of characters printed
  */
-int print_char(va_list args, char buffer[], int *index)
+int print_char(va_list args, char buffer[], int *index, char flag)
 {
 	char c;
 
+	(void)flag;
 	c = (char)va_arg(args, int);
 	return (buffer_char(c, buffer, index));
 }
@@ -63,14 +65,16 @@ int print_char(va_list args, char buffer[], int *index)
  * @args: The variadic argument list
  * @buffer: output buffer
  * @index: current index
+ * @flag: unused flag
  *
  * Return: Number of characters printed
  */
-int print_string(va_list args, char buffer[], int *index)
+int print_string(va_list args, char buffer[], int *index, char flag)
 {
 	char *str;
 	int count;
 
+	(void)flag;
 	str = va_arg(args, char *);
 	if (!str)
 		str = "(null)";
@@ -87,12 +91,14 @@ int print_string(va_list args, char buffer[], int *index)
  * @args: The variadic argument list (unused)
  * @buffer: output buffer
  * @index: current index
+ * @flag: unused flag
  *
  * Return: Always 1
  */
-int print_percent(va_list args, char buffer[], int *index)
+int print_percent(va_list args, char buffer[], int *index, char flag)
 {
 	(void)args;
+	(void)flag;
 	return (buffer_char('%', buffer, index));
 }
 
@@ -101,10 +107,11 @@ int print_percent(va_list args, char buffer[], int *index)
  * @args: The variadic argument list
  * @buffer: output buffer
  * @index: current index
+ * @flag: supported flag
  *
  * Return: Number of characters printed
  */
-int print_int(va_list args, char buffer[], int *index)
+int print_int(va_list args, char buffer[], int *index, char flag)
 {
 	int n;
 	unsigned int u;
@@ -113,6 +120,11 @@ int print_int(va_list args, char buffer[], int *index)
 
 	n = va_arg(args, int);
 	count = 0;
+
+	if (n >= 0 && flag == '+')
+		count += buffer_char('+', buffer, index);
+	else if (n >= 0 && flag == ' ')
+		count += buffer_char(' ', buffer, index);
 
 	if (n < 0)
 	{
