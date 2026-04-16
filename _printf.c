@@ -3,7 +3,10 @@
 #define BUF_SIZE 1024
 
 /**
- * get_handler - returns function
+ * get_handler - Returns the handler for a given specifier
+ * @c: The specifier character after '%'
+ *
+ * Return: Pointer to handler function, or NULL if not found
  */
 static int (*get_handler(char c))(va_list, char[], int *)
 {
@@ -26,7 +29,10 @@ static int (*get_handler(char c))(va_list, char[], int *)
 }
 
 /**
- * _printf - main function
+ * _printf - Produces output to stdout according to a format string
+ * @format: The format string containing directives
+ *
+ * Return: Number of characters printed, or -1 on error
  */
 int _printf(const char *format, ...)
 {
@@ -53,7 +59,10 @@ int _printf(const char *format, ...)
 		{
 			format++;
 			if (!*format)
+			{
+				va_end(args);
 				return (-1);
+			}
 
 			handler = get_handler(*format);
 			if (handler)
@@ -68,7 +77,6 @@ int _printf(const char *format, ...)
 	}
 
 	count += flush_buffer(buffer, &buf_index);
-
 	va_end(args);
 	return (count);
 }
