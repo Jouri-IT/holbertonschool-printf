@@ -27,3 +27,4 @@ int print_hex_upper(va_list, char[], int *, char, char, int, int);
 
 #endif
 int print_reverse(va_list args, char buffer[], int *index, char flag, char length, int width, int precision);
+int print_rot13(va_list args, char buffer[], int *index, char flag, char length, int width, int precision);
