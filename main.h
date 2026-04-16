@@ -22,3 +22,4 @@ int print_int(va_list args, char buffer[], int *index);
 int print_binary(va_list args, char buffer[], int *index);
 
 #endif
+int print_S(va_list args, char buffer[], int *index);
