@@ -12,7 +12,8 @@ static int print_hex_special(unsigned int n, char buffer[], int *index)
 	return (count);
 }
 
-int print_S(va_list args, char buffer[], int *index, char flag, char length, int width)
+int print_S(va_list args, char buffer[], int *index,
+	char flag, char length, int width, int precision)
 {
 	char *str;
 	int count;
@@ -37,6 +38,9 @@ int print_S(va_list args, char buffer[], int *index, char flag, char length, int
 			len++;
 		tmp++;
 	}
+
+	if (precision >= 0 && precision < len)
+		len = precision;
 
 	count = 0;
 	count += print_padding(width, len, buffer, index);
