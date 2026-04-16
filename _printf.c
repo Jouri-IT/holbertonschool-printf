@@ -2,12 +2,6 @@
 
 #define BUF_SIZE 1024
 
-/**
- * get_handler - Returns the handler for a given specifier
- * @c: The specifier character after '%'
- *
- * Return: Pointer to handler function, or NULL if not found
- */
 static int (*get_handler(char c))(va_list, char[], int *, char)
 {
 	int i;
@@ -18,8 +12,12 @@ static int (*get_handler(char c))(va_list, char[], int *, char)
 		{'d', print_int},
 		{'i', print_int},
 		{'b', print_binary},
-	{'S', print_S},
-	{'p', print_pointer},
+		{'u', print_unsigned},
+		{'o', print_octal},
+		{'x', print_hex_lower},
+		{'X', print_hex_upper},
+		{'S', print_S},
+		{'p', print_pointer},
 		{0, NULL}
 	};
 
@@ -31,12 +29,11 @@ static int (*get_handler(char c))(va_list, char[], int *, char)
 	return (NULL);
 }
 
-/**
- * _printf - Produces output to stdout according to a format string
- * @format: The format string containing directives
- *
- * Return: Number of characters printed, or -1 on error
- */
+static int is_flag(char c)
+{
+	return (c == '+' || c == ' ' || c == '#');
+}
+
 int _printf(const char *format, ...)
 {
 	va_list args;
@@ -44,6 +41,7 @@ int _printf(const char *format, ...)
 	int (*handler)(va_list, char[], int *, char);
 	char buffer[BUF_SIZE];
 	int buf_index;
+	char flag;
 
 	if (!format)
 		return (-1);
@@ -61,17 +59,29 @@ int _printf(const char *format, ...)
 		else
 		{
 			format++;
+			flag = 0;
+
+			while (is_flag(*format))
+			{
+				flag = *format;
+				format++;
+			}
+
 			if (!*format)
 			{
 				va_end(args);
 				return (-1);
 			}
+
 			handler = get_handler(*format);
+
 			if (handler)
 				count += handler(args, buffer, &buf_index, flag);
 			else
 			{
 				count += buffer_char('%', buffer, &buf_index);
+				if (flag)
+					count += buffer_char(flag, buffer, &buf_index);
 				count += buffer_char(*format, buffer, &buf_index);
 			}
 		}
