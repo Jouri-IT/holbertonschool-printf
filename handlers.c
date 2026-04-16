@@ -2,18 +2,10 @@
 
 #define BUF_SIZE 1024
 
-/**
- * flush_buffer - writes buffer to stdout
- * @buffer: output buffer
- * @index: current index
- *
- * Return: number of chars written
- */
 int flush_buffer(char buffer[], int *index)
 {
-	int count;
+	int count = 0;
 
-	count = 0;
 	if (*index > 0)
 	{
 		write(1, buffer, *index);
@@ -23,14 +15,6 @@ int flush_buffer(char buffer[], int *index)
 	return (count);
 }
 
-/**
- * buffer_char - adds char to buffer
- * @c: char to add
- * @buffer: output buffer
- * @index: current index
- *
- * Return: Always 1
- */
 int buffer_char(char c, char buffer[], int *index)
 {
 	if (*index == BUF_SIZE)
@@ -42,15 +26,6 @@ int buffer_char(char c, char buffer[], int *index)
 	return (1);
 }
 
-/**
- * print_char - Handles %c specifier
- * @args: The variadic argument list
- * @buffer: output buffer
- * @index: current index
- * @flag: unused flag
- *
- * Return: Number of characters printed
- */
 int print_char(va_list args, char buffer[], int *index, char flag)
 {
 	char c;
@@ -60,25 +35,15 @@ int print_char(va_list args, char buffer[], int *index, char flag)
 	return (buffer_char(c, buffer, index));
 }
 
-/**
- * print_string - Handles %s specifier
- * @args: The variadic argument list
- * @buffer: output buffer
- * @index: current index
- * @flag: unused flag
- *
- * Return: Number of characters printed
- */
 int print_string(va_list args, char buffer[], int *index, char flag)
 {
 	char *str;
-	int count;
+	int count = 0;
 
 	(void)flag;
 	str = va_arg(args, char *);
 	if (!str)
 		str = "(null)";
-	count = 0;
 
 	while (*str)
 		count += buffer_char(*str++, buffer, index);
@@ -86,15 +51,6 @@ int print_string(va_list args, char buffer[], int *index, char flag)
 	return (count);
 }
 
-/**
- * print_percent - Handles %% specifier
- * @args: The variadic argument list (unused)
- * @buffer: output buffer
- * @index: current index
- * @flag: unused flag
- *
- * Return: Always 1
- */
 int print_percent(va_list args, char buffer[], int *index, char flag)
 {
 	(void)args;
@@ -102,29 +58,22 @@ int print_percent(va_list args, char buffer[], int *index, char flag)
 	return (buffer_char('%', buffer, index));
 }
 
-/**
- * print_int - Handles %d and %i specifiers
- * @args: The variadic argument list
- * @buffer: output buffer
- * @index: current index
- * @flag: supported flag
- *
- * Return: Number of characters printed
- */
 int print_int(va_list args, char buffer[], int *index, char flag)
 {
 	int n;
 	unsigned int u;
-	int count;
+	int count = 0;
 	unsigned int divisor;
 
 	n = va_arg(args, int);
-	count = 0;
 
-	if (n >= 0 && flag == '+')
-		count += buffer_char('+', buffer, index);
-	else if (n >= 0 && flag == ' ')
-		count += buffer_char(' ', buffer, index);
+	if (n >= 0)
+	{
+		if (flag == '+')
+			count += buffer_char('+', buffer, index);
+		else if (flag == ' ')
+			count += buffer_char(' ', buffer, index);
+	}
 
 	if (n < 0)
 	{
