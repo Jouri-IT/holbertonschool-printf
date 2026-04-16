@@ -50,6 +50,7 @@ int print_unsigned(va_list args, char buffer[], int *index,
 	unsigned long int n;
 	int count;
 	int len;
+	int total;
 
 	if (length == 'l')
 		n = va_arg(args, unsigned long int);
@@ -63,21 +64,37 @@ int print_unsigned(va_list args, char buffer[], int *index,
 	else
 		len = unsigned_len(n, 10);
 
+	total = (precision > len ? precision : len);
 	count = 0;
-	if (flag == '0' && precision < 0)
-		count += print_zero_padding(width, len, buffer, index);
-	else
-		count += print_padding(width, (precision > len ? precision : len), buffer, index);
 
-	while (len < precision)
+	if (flag == '-')
 	{
-		count += buffer_char('0', buffer, index);
-		precision--;
+		while (len < precision)
+		{
+			count += buffer_char('0', buffer, index);
+			precision--;
+		}
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "0123456789", buffer, index);
+		count += print_padding(width, total, buffer, index);
 	}
-
-	if (!(n == 0 && len == 0))
-		count += print_base_unsigned_inner(n, "0123456789", buffer, index);
-
+	else if (flag == '0' && precision < 0)
+	{
+		count += print_zero_padding(width, total, buffer, index);
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "0123456789", buffer, index);
+	}
+	else
+	{
+		count += print_padding(width, total, buffer, index);
+		while (len < precision)
+		{
+			count += buffer_char('0', buffer, index);
+			precision--;
+		}
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "0123456789", buffer, index);
+	}
 	return (count);
 }
 
@@ -106,23 +123,47 @@ int print_octal(va_list args, char buffer[], int *index,
 	total = (precision > len ? precision : len) + prefix;
 	count = 0;
 
-	if (flag == '0' && precision < 0)
-		count += print_zero_padding(width, total, buffer, index);
-	else
-		count += print_padding(width, total, buffer, index);
-
-	if (prefix)
-		count += buffer_char('0', buffer, index);
-
-	while (len < precision)
+	if (flag == '-')
 	{
-		count += buffer_char('0', buffer, index);
-		precision--;
+		if (prefix)
+			count += buffer_char('0', buffer, index);
+		while (len < precision)
+		{
+			count += buffer_char('0', buffer, index);
+			precision--;
+		}
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "01234567", buffer, index);
+		count += print_padding(width, total, buffer, index);
 	}
-
-	if (!(n == 0 && len == 0))
-		count += print_base_unsigned_inner(n, "01234567", buffer, index);
-
+	else if (flag == '0' && precision < 0)
+	{
+		if (prefix)
+		{
+			count += buffer_char('0', buffer, index);
+			prefix = 0;
+			total--;
+			width--;
+		}
+		count += print_zero_padding(width, total, buffer, index);
+		if (prefix)
+			count += buffer_char('0', buffer, index);
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "01234567", buffer, index);
+	}
+	else
+	{
+		count += print_padding(width, total, buffer, index);
+		if (prefix)
+			count += buffer_char('0', buffer, index);
+		while (len < precision)
+		{
+			count += buffer_char('0', buffer, index);
+			precision--;
+		}
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "01234567", buffer, index);
+	}
 	return (count);
 }
 
@@ -151,38 +192,52 @@ int print_hex_lower(va_list args, char buffer[], int *index,
 	total = (precision > len ? precision : len) + prefix;
 	count = 0;
 
-	if (flag == '0' && precision < 0)
+	if (flag == '-')
 	{
 		if (prefix)
 		{
 			count += buffer_char('0', buffer, index);
 			count += buffer_char('x', buffer, index);
-			prefix = 0;
+		}
+		while (len < precision)
+		{
+			count += buffer_char('0', buffer, index);
+			precision--;
+		}
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "0123456789abcdef", buffer, index);
+		count += print_padding(width, total, buffer, index);
+	}
+	else if (flag == '0' && precision < 0)
+	{
+		if (prefix)
+		{
+			count += buffer_char('0', buffer, index);
+			count += buffer_char('x', buffer, index);
 			total -= 2;
 			width -= 2;
+			prefix = 0;
 		}
 		count += print_zero_padding(width, total, buffer, index);
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "0123456789abcdef", buffer, index);
 	}
 	else
 	{
 		count += print_padding(width, total, buffer, index);
+		if (prefix)
+		{
+			count += buffer_char('0', buffer, index);
+			count += buffer_char('x', buffer, index);
+		}
+		while (len < precision)
+		{
+			count += buffer_char('0', buffer, index);
+			precision--;
+		}
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "0123456789abcdef", buffer, index);
 	}
-
-	if (prefix)
-	{
-		count += buffer_char('0', buffer, index);
-		count += buffer_char('x', buffer, index);
-	}
-
-	while (len < precision)
-	{
-		count += buffer_char('0', buffer, index);
-		precision--;
-	}
-
-	if (!(n == 0 && len == 0))
-		count += print_base_unsigned_inner(n, "0123456789abcdef", buffer, index);
-
 	return (count);
 }
 
@@ -211,37 +266,51 @@ int print_hex_upper(va_list args, char buffer[], int *index,
 	total = (precision > len ? precision : len) + prefix;
 	count = 0;
 
-	if (flag == '0' && precision < 0)
+	if (flag == '-')
 	{
 		if (prefix)
 		{
 			count += buffer_char('0', buffer, index);
 			count += buffer_char('X', buffer, index);
-			prefix = 0;
+		}
+		while (len < precision)
+		{
+			count += buffer_char('0', buffer, index);
+			precision--;
+		}
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "0123456789ABCDEF", buffer, index);
+		count += print_padding(width, total, buffer, index);
+	}
+	else if (flag == '0' && precision < 0)
+	{
+		if (prefix)
+		{
+			count += buffer_char('0', buffer, index);
+			count += buffer_char('X', buffer, index);
 			total -= 2;
 			width -= 2;
+			prefix = 0;
 		}
 		count += print_zero_padding(width, total, buffer, index);
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "0123456789ABCDEF", buffer, index);
 	}
 	else
 	{
 		count += print_padding(width, total, buffer, index);
+		if (prefix)
+		{
+			count += buffer_char('0', buffer, index);
+			count += buffer_char('X', buffer, index);
+		}
+		while (len < precision)
+		{
+			count += buffer_char('0', buffer, index);
+			precision--;
+		}
+		if (!(n == 0 && len == 0))
+			count += print_base_unsigned_inner(n, "0123456789ABCDEF", buffer, index);
 	}
-
-	if (prefix)
-	{
-		count += buffer_char('0', buffer, index);
-		count += buffer_char('X', buffer, index);
-	}
-
-	while (len < precision)
-	{
-		count += buffer_char('0', buffer, index);
-		precision--;
-	}
-
-	if (!(n == 0 && len == 0))
-		count += print_base_unsigned_inner(n, "0123456789ABCDEF", buffer, index);
-
 	return (count);
 }

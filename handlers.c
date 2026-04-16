@@ -20,10 +20,8 @@ int buffer_char(char c, char buffer[], int *index)
 {
 	if (*index == BUF_SIZE)
 		flush_buffer(buffer, index);
-
 	buffer[*index] = c;
 	(*index)++;
-
 	return (1);
 }
 
@@ -44,13 +42,21 @@ int print_char(va_list args, char buffer[], int *index,
 	char c;
 	int count;
 
-	(void)flag;
 	(void)length;
 	(void)precision;
 	c = (char)va_arg(args, int);
 	count = 0;
-	count += print_padding(width, 1, buffer, index);
-	count += buffer_char(c, buffer, index);
+
+	if (flag == '-')
+	{
+		count += buffer_char(c, buffer, index);
+		count += print_padding(width, 1, buffer, index);
+	}
+	else
+	{
+		count += print_padding(width, 1, buffer, index);
+		count += buffer_char(c, buffer, index);
+	}
 	return (count);
 }
 
@@ -62,7 +68,6 @@ int print_string(va_list args, char buffer[], int *index,
 	int len;
 	int i;
 
-	(void)flag;
 	(void)length;
 	str = va_arg(args, char *);
 	if (!str)
@@ -76,9 +81,18 @@ int print_string(va_list args, char buffer[], int *index,
 		len = precision;
 
 	count = 0;
-	count += print_padding(width, len, buffer, index);
-	for (i = 0; i < len; i++)
-		count += buffer_char(str[i], buffer, index);
+	if (flag == '-')
+	{
+		for (i = 0; i < len; i++)
+			count += buffer_char(str[i], buffer, index);
+		count += print_padding(width, len, buffer, index);
+	}
+	else
+	{
+		count += print_padding(width, len, buffer, index);
+		for (i = 0; i < len; i++)
+			count += buffer_char(str[i], buffer, index);
+	}
 	return (count);
 }
 
@@ -88,12 +102,20 @@ int print_percent(va_list args, char buffer[], int *index,
 	int count;
 
 	(void)args;
-	(void)flag;
 	(void)length;
 	(void)precision;
 	count = 0;
-	count += print_padding(width, 1, buffer, index);
-	count += buffer_char('%', buffer, index);
+
+	if (flag == '-')
+	{
+		count += buffer_char('%', buffer, index);
+		count += print_padding(width, 1, buffer, index);
+	}
+	else
+	{
+		count += print_padding(width, 1, buffer, index);
+		count += buffer_char('%', buffer, index);
+	}
 	return (count);
 }
 
@@ -146,7 +168,15 @@ int print_int(va_list args, char buffer[], int *index,
 	total_len = len + (sign ? 1 : 0);
 	count = 0;
 
-	if (flag == '0' && precision < 0)
+	if (flag == '-')
+	{
+		if (sign)
+			count += buffer_char(sign, buffer, index);
+		for (i = len - 1; i >= 0; i--)
+			count += buffer_char(tmp[i], buffer, index);
+		count += print_padding(width, total_len, buffer, index);
+	}
+	else if (flag == '0' && precision < 0)
 	{
 		if (sign)
 		{
@@ -155,17 +185,19 @@ int print_int(va_list args, char buffer[], int *index,
 		}
 		for (i = total_len; i < width; i++)
 			count += buffer_char('0', buffer, index);
+		if (sign)
+			count += buffer_char(sign, buffer, index);
+		for (i = len - 1; i >= 0; i--)
+			count += buffer_char(tmp[i], buffer, index);
 	}
 	else
 	{
 		count += print_padding(width, total_len, buffer, index);
+		if (sign)
+			count += buffer_char(sign, buffer, index);
+		for (i = len - 1; i >= 0; i--)
+			count += buffer_char(tmp[i], buffer, index);
 	}
-
-	if (sign)
-		count += buffer_char(sign, buffer, index);
-
-	for (i = len - 1; i >= 0; i--)
-		count += buffer_char(tmp[i], buffer, index);
 
 	return (count);
 }
