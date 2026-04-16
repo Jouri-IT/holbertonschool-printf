@@ -20,10 +20,8 @@ int buffer_char(char c, char buffer[], int *index)
 {
 	if (*index == BUF_SIZE)
 		flush_buffer(buffer, index);
-
 	buffer[*index] = c;
 	(*index)++;
-
 	return (1);
 }
 
@@ -35,17 +33,18 @@ int print_padding(int width, int len, char buffer[], int *index)
 	count = 0;
 	for (i = len; i < width; i++)
 		count += buffer_char(' ', buffer, index);
-
 	return (count);
 }
 
-int print_char(va_list args, char buffer[], int *index, char flag, char length, int width)
+int print_char(va_list args, char buffer[], int *index,
+	char flag, char length, int width, int precision)
 {
 	char c;
 	int count;
 
 	(void)flag;
 	(void)length;
+	(void)precision;
 	c = (char)va_arg(args, int);
 	count = 0;
 	count += print_padding(width, 1, buffer, index);
@@ -53,11 +52,13 @@ int print_char(va_list args, char buffer[], int *index, char flag, char length, 
 	return (count);
 }
 
-int print_string(va_list args, char buffer[], int *index, char flag, char length, int width)
+int print_string(va_list args, char buffer[], int *index,
+	char flag, char length, int width, int precision)
 {
 	char *str;
 	int count;
 	int len;
+	int i;
 
 	(void)flag;
 	(void)length;
@@ -69,36 +70,42 @@ int print_string(va_list args, char buffer[], int *index, char flag, char length
 	while (str[len])
 		len++;
 
+	if (precision >= 0 && precision < len)
+		len = precision;
+
 	count = 0;
 	count += print_padding(width, len, buffer, index);
-	while (*str)
-		count += buffer_char(*str++, buffer, index);
-
+	for (i = 0; i < len; i++)
+		count += buffer_char(str[i], buffer, index);
 	return (count);
 }
 
-int print_percent(va_list args, char buffer[], int *index, char flag, char length, int width)
+int print_percent(va_list args, char buffer[], int *index,
+	char flag, char length, int width, int precision)
 {
 	int count;
 
 	(void)args;
 	(void)flag;
 	(void)length;
+	(void)precision;
 	count = 0;
 	count += print_padding(width, 1, buffer, index);
 	count += buffer_char('%', buffer, index);
 	return (count);
 }
 
-int print_int(va_list args, char buffer[], int *index, char flag, char length, int width)
+int print_int(va_list args, char buffer[], int *index,
+	char flag, char length, int width, int precision)
 {
 	long int n;
 	unsigned long int u;
-	int count;
 	unsigned long int divisor;
 	char sign;
+	char tmp[32];
 	int len;
-	unsigned long int tmp;
+	int count;
+	int i;
 
 	if (length == 'l')
 		n = va_arg(args, long int);
@@ -107,9 +114,7 @@ int print_int(va_list args, char buffer[], int *index, char flag, char length, i
 	else
 		n = va_arg(args, int);
 
-	count = 0;
 	sign = 0;
-
 	if (n < 0)
 		sign = '-';
 	else if (flag == '+')
@@ -122,29 +127,29 @@ int print_int(va_list args, char buffer[], int *index, char flag, char length, i
 	else
 		u = (unsigned long int)n;
 
-	len = 0;
-	if (sign)
-		len++;
-	tmp = u;
-	do {
-		len++;
-		tmp /= 10;
-	} while (tmp);
+	if (u == 0 && precision == 0)
+		len = 0;
+	else
+	{
+		len = 0;
+		do {
+			tmp[len++] = (u % 10) + '0';
+			u /= 10;
+		} while (u);
+	}
 
-	count += print_padding(width, len, buffer, index);
+	while (len < precision)
+		tmp[len++] = '0';
+
+	count = 0;
+	count += print_padding(width, len + (sign ? 1 : 0), buffer, index);
 
 	if (sign)
 		count += buffer_char(sign, buffer, index);
 
-	divisor = 1;
-	while (u / divisor >= 10)
-		divisor *= 10;
+	for (i = len - 1; i >= 0; i--)
+		count += buffer_char(tmp[i], buffer, index);
 
-	while (divisor)
-	{
-		count += buffer_char('0' + (u / divisor % 10), buffer, index);
-		divisor /= 10;
-	}
-
+	(void)divisor;
 	return (count);
 }
