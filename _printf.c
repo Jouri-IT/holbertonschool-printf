@@ -19,6 +19,7 @@ static int (*get_handler(char c))(va_list, char[], int *)
 		{'i', print_int},
 		{'b', print_binary},
 	{'S', print_S},
+	{'p', print_pointer},
 		{0, NULL}
 	};
 
