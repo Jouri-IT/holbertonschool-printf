@@ -63,7 +63,12 @@ int _printf(const char *format, ...)
 
 			while (is_flag(*format))
 			{
-				flag = *format;
+				if (*format == '+')
+					flag = '+';
+				else if (*format == ' ' && flag != '+')
+					flag = ' ';
+				else if (*format == '#' && flag == 0)
+					flag = '#';
 				format++;
 			}
 
