@@ -16,6 +16,7 @@ static int (*get_handler(char c))(va_list, char[], int *, char, char, int, int)
 		{'x', print_hex_lower},
 		{'X', print_hex_upper},
 		{'r', print_reverse},
+	{'b', print_binary},
 		{'R', print_rot13},
 		{0, NULL}
 	};
